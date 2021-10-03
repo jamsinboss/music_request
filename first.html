@@ -54,8 +54,9 @@
 							<!--<span class="image main"><img src="images/pic13.jpg" alt="" /></span>-->
 							<ul>
 								<li>📝 <strong>1학년</strong> 점심방송 음악을 신청하는 곳입니다</li>
-								<li>🎬 <strong>공식 MV</strong>가 있는 음악만 신청 가능합니다</li>
+								<li>🎬 <strong>공식 MV</strong>가 있는 <strong>2018년 이후 발매</strong>된 음악만 신청 가능합니다</li>
 								<li>🎵 <strong>매일 4곡</strong>을 랜덤으로 뽑아 점심방송에서 재생합니다</li>
+								<li>🚀 하루에 <strong>한 아티스트당 한 곡</strong>만 재생합니다</li>
 								<li>🎈 제출된 신청곡 목록은 <strong>매주 토요일 자정</strong>에 초기화됩니다</li>
 							</ul>
 							<!--width="640" height="524" -->
@@ -68,7 +69,7 @@
 								padding-top: 150%;
 								}
 
-								.container > iframe {
+								.container > form {
 								position: absolute;
 								top: 0;
 								left: 0;
@@ -80,7 +81,28 @@
 								}
 							</style>
 							<div class="container">
-								<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc_cK212NC0tHDZJ5VpotJ8d8CEC4EWJAC40IiAaXXC5Ku2tQ/viewform?embedded=true" frameborder="0" marginheight="0" marginwidth="0">로드 중…</iframe>
+								<form method="post" id="form">
+									<label>아래 입력란을 작성해주세요</label>
+									<select name="abc" id="1254892316">
+										<option value="옵션 1">옵션 1</option>
+										<option value="옵션 2">옵션 2</option>
+										<option value="옵션 3">옵션 3</option>
+									</select>
+									<select name="abc" id="9967857">
+										<option value="옵션 1">옵션 1</option>
+										<option value="옵션 2">옵션 2</option>
+										<option value="옵션 3">옵션 3</option>
+									</select>
+									<select name="abc" id="885727560">
+										<option value="옵션 1">옵션 1</option>
+										<option value="옵션 2">옵션 2</option>
+										<option value="옵션 3">옵션 3</option>
+									</select>
+									<input id="879878790" /><br>
+									<input id="19351438" /><br>
+									<!--<input type="text" name="entry.294341084" id="inp1">-->
+									<input type="submit" value="Submit">
+								</form>
 							</div>
 						</div>
 					</div>
@@ -108,6 +130,7 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script src="submit.js"></script>
 
 	</body>
 </html>

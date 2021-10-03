@@ -2889,7 +2889,8 @@ input, select, textarea {
 					padding: 0;
 				}
 
-					#header nav ul li a {
+					#header nav ul li a,
+					#header nav ul li p {
 						display: block;
 						position: relative;
 						height: 3em;
