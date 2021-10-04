@@ -55,55 +55,23 @@
 							<ul>
 								<li>📝 <strong>1학년</strong> 점심방송 음악을 신청하는 곳입니다</li>
 								<li>🎬 <strong>공식 MV</strong>가 있는 <strong>2018년 이후 발매</strong>된 음악만 신청 가능합니다</li>
-								<li>🎵 <strong>매일 4곡</strong>을 랜덤으로 뽑아 점심방송에서 재생합니다</li>
+								<li>🎵 <strong>매일 4~6곡</strong>을 랜덤으로 뽑아 점심방송에서 재생합니다</li>
 								<li>🚀 하루에 <strong>한 아티스트당 한 곡</strong>만 재생합니다</li>
-								<li>🎈 제출된 신청곡 목록은 <strong>매주 토요일 자정</strong>에 초기화됩니다</li>
+								<li>🎈 제출된 신청곡 목록은 <strong>매주</strong> 초기화됩니다</li>
 							</ul>
-							<!--width="640" height="524" -->
-							<style>
-								.container {
-								position: relative;
-								width: 100%;
-								overflow: hidden;
-								/* padding-top: 56.25%; */
-								padding-top: 150%;
-								}
+							<form method="post" id="form" name="1">
 
-								.container > form {
-								position: absolute;
-								top: 0;
-								left: 0;
-								bottom: 0;
-								right: 0;
-								width: 100%;
-								height: 100%;
-								border: none;
-								}
-							</style>
-							<div class="container">
-								<form method="post" id="form">
-									<label>아래 입력란을 작성해주세요</label>
-									<select name="abc" id="1254892316">
-										<option value="옵션 1">옵션 1</option>
-										<option value="옵션 2">옵션 2</option>
-										<option value="옵션 3">옵션 3</option>
-									</select>
-									<select name="abc" id="9967857">
-										<option value="옵션 1">옵션 1</option>
-										<option value="옵션 2">옵션 2</option>
-										<option value="옵션 3">옵션 3</option>
-									</select>
-									<select name="abc" id="885727560">
-										<option value="옵션 1">옵션 1</option>
-										<option value="옵션 2">옵션 2</option>
-										<option value="옵션 3">옵션 3</option>
-									</select>
-									<input id="879878790" /><br>
-									<input id="19351438" /><br>
-									<!--<input type="text" name="entry.294341084" id="inp1">-->
-									<input type="submit" value="Submit">
-								</form>
-							</div>
+								<label>신청곡+가수</label>
+								<input type="text" id="136314928" />
+								<br/>
+
+								<label>뮤비 혹은 무대 영상 링크</label>
+								<textarea id="1148749992"></textarea>
+								<br/>
+
+								<input id="submit" type="submit" value="제출하기">
+								<label id="submitting">신청곡 제출 중... (최대 10초 소요)</label>
+							</form>
 						</div>
 					</div>
 
@@ -112,7 +80,7 @@
 						<div class="inner">
 							<section>
 								<ul class="icons">
-									<li><a href="https://www.youtube.com" class="icon brands style2 fa-youtube"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.youtube.com/channel/UCv1fGxVYv4OTN6dCsRyjuDw" class="icon brands style2 fa-youtube"><span class="label">Twitter</span></a></li>
 									<li><a href="mailto:jamsinboss@gmail.com" class="icon solid style2 fa-envelope"><span class="label">Facebook</span></a></li>
 								</ul>
 							</section>

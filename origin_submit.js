@@ -1,0 +1,95 @@
+let form = document.getElementById("form");
+let url = "https://script.google.com/macros/s/AKfycbypwTB8D625tAwUUNW36c194ZxQk2xzBoD1co1tfZcrJ9Em_nhbRyLMTj9s0xHqfg/exec";
+
+let values = ["136314928","1148749992"];
+
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    let link = generateUrl();
+    console.log(link);
+
+    document.getElementById('submit').style.display = 'none';
+    document.getElementById('submitting').style.display = '';
+
+    fetch(link,{
+        method: "GET",
+        mode: "no-cors"
+    })
+    .then(data=>{
+        console.log(data);
+        alert("신청곡이 제출되었습니다. 감사합니다!");
+        location.reload();
+    })
+    .catch(err=> {
+        console.error(err)
+        alert(err);
+    }); //promise based
+})
+
+document.getElementById('submitting').style.display = 'none';
+
+function generateUrl(){
+    let link = url;
+    link += "?grade=" + form.name;
+    for(let i=0;i<values.length;i++)
+    {
+        console.log(i);
+
+        link += "&";
+
+        let element = document.getElementById(values[i]);
+        if(element != undefined)
+        {
+            if(document.getElementById(values[i]).value.length == 0) emptyAnswer();
+            link += values[i] + "=" + document.getElementById(values[i]).value;
+        }
+        else
+        {
+            let arr = document.querySelectorAll('input[name=\"' + values[i] + '\"]:checked');
+            if(arr.length == 0) emptyAnswer();
+            for(let j=0;j<arr.length;j++) {
+                if(j!=0) link += "&";
+                link += values[i] + "=" + arr[j].value;
+            }
+        }
+    }
+    return link.replaceAll(" ","%20").replaceAll("\n","%0D%0A");
+}
+
+function emptyAnswer() {
+    alert("모든 값을 입력해주세요");
+    throw new Error("no value");
+}
+
+
+/*form.addEventListener("submit", (e)=>{
+    e.preventDefault();//prevent default behaviour
+    //e.stopImmediatePropagation();
+    fetch(url,{
+        method: "POST",
+        mode: "no-cors",
+        header:{
+            'Content-Type': 'application/json'
+            },
+        body: getInputData()
+    })
+    .then(data=>{
+        console.log(data);
+        alert("Form Submitted");
+    })
+    .catch(err=>console.error(err)); //promise based
+});
+
+//populating input data
+function getInputData(){
+    let dataToPost = new FormData(); //formdata API
+
+    //fill name attributes to corresponding values
+    dataToPost.append("emtr", document.getElementById("select_test").value);
+    dataToPost.append("emtr", document.getElementById("select_test2").value);
+    //dataToPost.append("entry.294341084", document.getElementById("inp1").value);
+
+    return dataToPost;
+}
+*/
