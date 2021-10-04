@@ -1,1 +1,104 @@
-const _0x5b020b=_0x3745;(function(_0x2ef9a8,_0x3bee95){const _0x3b5491=_0x3745,_0x414cb2=_0x2ef9a8();while(!![]){try{const _0x57ebc7=parseInt(_0x3b5491(0x188))/0x1*(parseInt(_0x3b5491(0x18c))/0x2)+parseInt(_0x3b5491(0x196))/0x3+-parseInt(_0x3b5491(0x1a5))/0x4+-parseInt(_0x3b5491(0x18d))/0x5*(parseInt(_0x3b5491(0x19c))/0x6)+-parseInt(_0x3b5491(0x18b))/0x7+-parseInt(_0x3b5491(0x1a4))/0x8*(-parseInt(_0x3b5491(0x190))/0x9)+parseInt(_0x3b5491(0x1aa))/0xa*(parseInt(_0x3b5491(0x1a2))/0xb);if(_0x57ebc7===_0x3bee95)break;else _0x414cb2['push'](_0x414cb2['shift']());}catch(_0x291915){_0x414cb2['push'](_0x414cb2['shift']());}}}(_0x2813,0x9404c));function _0x2813(){const _0x14a913=['4133904uLCIyF','none','style','모든\x20값을\x20입력해주세요','then','7890ORNutZ','addEventListener','display','3562PFVuPO','length','name','5815320EDmUJq','518aUzbhX','161465uqgRMo','optional','no-cors','180378TRlLRy','신청곡이\x20제출되었습니다.\x20감사합니다!','GET','replaceAll','%20','error','1853529zEKSZN','log','getElementById','form','value','submitting','102Nitcoc','136314928','input[name=\x22','reload','submit','\x22]:checked','12518gFWHkB','preventDefault','232DkjxfH'];_0x2813=function(){return _0x14a913;};return _0x2813();}let form=document[_0x5b020b(0x198)](_0x5b020b(0x199)),url='https://script.google.com/macros/s/AKfycbypwTB8D625tAwUUNW36c194ZxQk2xzBoD1co1tfZcrJ9Em_nhbRyLMTj9s0xHqfg/exec',values=[_0x5b020b(0x19d),'1148749992'];form[_0x5b020b(0x1ab)](_0x5b020b(0x1a0),_0x15d75e=>{const _0x2e5a9e=_0x5b020b;_0x15d75e[_0x2e5a9e(0x1a3)]();let _0xf17795=generateUrl();console[_0x2e5a9e(0x197)](_0xf17795),document['getElementById']('submit')[_0x2e5a9e(0x1a7)]['display']=_0x2e5a9e(0x1a6),document[_0x2e5a9e(0x198)](_0x2e5a9e(0x19b))[_0x2e5a9e(0x1a7)][_0x2e5a9e(0x1ac)]='',fetch(_0xf17795,{'method':_0x2e5a9e(0x192),'mode':_0x2e5a9e(0x18f)})[_0x2e5a9e(0x1a9)](_0x307224=>{const _0x1105fa=_0x2e5a9e;console[_0x1105fa(0x197)](_0x307224),alert(_0x1105fa(0x191)),location[_0x1105fa(0x19f)]();})['catch'](_0xcf0c3d=>{const _0x1df46f=_0x2e5a9e;console[_0x1df46f(0x195)](_0xcf0c3d),alert(_0xcf0c3d);});}),document[_0x5b020b(0x198)](_0x5b020b(0x19b))['style'][_0x5b020b(0x1ac)]='none';function _0x3745(_0x1032c1,_0x2b3109){const _0x281318=_0x2813();return _0x3745=function(_0x374530,_0x1ab83b){_0x374530=_0x374530-0x188;let _0x3a984c=_0x281318[_0x374530];return _0x3a984c;},_0x3745(_0x1032c1,_0x2b3109);}function generateUrl(){const _0x178897=_0x5b020b;let _0x216315=url;_0x216315+='?grade='+form[_0x178897(0x18a)];for(let _0x21d338=0x0;_0x21d338<values['length'];_0x21d338++){console[_0x178897(0x197)](_0x21d338);let _0x5b87e7=document[_0x178897(0x198)](values[_0x21d338]);if(_0x5b87e7!=undefined){var _0x1899b7;if(_0x5b87e7['value'][_0x178897(0x189)]==0x0){if(_0x5b87e7[_0x178897(0x18a)]==_0x178897(0x18e))_0x1899b7='';else emptyAnswer();}else _0x1899b7=_0x5b87e7[_0x178897(0x19a)];_0x216315+='&'+values[_0x21d338]+'='+_0x1899b7;}else{let _0x58f42e=document['querySelectorAll'](_0x178897(0x19e)+values[_0x21d338]+_0x178897(0x1a1));if(_0x58f42e[_0x178897(0x189)]==0x0)emptyAnswer();for(let _0x3ab1c9=0x0;_0x3ab1c9<_0x58f42e[_0x178897(0x189)];_0x3ab1c9++){_0x216315+='&',_0x216315+=values[_0x21d338]+'='+_0x58f42e[_0x3ab1c9][_0x178897(0x19a)];}}}return _0x216315[_0x178897(0x193)]('\x20',_0x178897(0x194))['replaceAll']('\x0a','%0D%0A');}function emptyAnswer(){const _0x2ca99f=_0x5b020b;alert(_0x2ca99f(0x1a8));throw new Error('no\x20value');}
+let form = document.getElementById("form");
+let url = "https://script.google.com/macros/s/AKfycbypwTB8D625tAwUUNW36c194ZxQk2xzBoD1co1tfZcrJ9Em_nhbRyLMTj9s0xHqfg/exec";
+
+let values = ["136314928","1148749992"];
+
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    let link = generateUrl();
+    console.log(link);
+    console.log(encodeURI(link));
+
+    document.getElementById('submit').style.display = 'none';
+    document.getElementById('submitting').style.display = '';
+
+    fetch(encodeURI(link),{
+        method: "GET",
+        mode: "no-cors"
+    })
+    .then(function(data) {
+        console.log(data);
+        alert("신청곡이 제출되었습니다. 감사합니다!");
+        location.reload();
+    })
+    .catch(function(err) {
+        console.error(err)
+        alert(err);
+    }); //promise based
+})
+
+document.getElementById('submitting').style.display = 'none';
+
+function generateUrl(){
+    let link = url;
+    link += "?grade=" + form.name;
+    for(let i=0;i<values.length;i++)
+    {
+        console.log(i);
+
+        let element = document.getElementById(values[i]);
+        if(element != undefined)
+        {
+            var value;
+            if(element.value.length == 0)
+            {
+                if(element.name == "optional") value = "";
+                else emptyAnswer();
+            }
+            else value = element.value;
+            link += "&" + values[i] + "=" + value;
+        }
+        else
+        {
+            let arr = document.querySelectorAll('input[name=\"' + values[i] + '\"]:checked');
+            if(arr.length == 0) emptyAnswer();
+            for(let j=0;j<arr.length;j++) {
+                link += "&";
+                link += values[i] + "=" + arr[j].value;
+            }
+        }
+    }
+    try {
+    return link.replaceAll(" ","%20").replaceAll("\n","%0D%0A");
+    } catch (err) { // internet explorer
+        return link.replace(/" "/gi,"%20").replace(/"\n"/gi,"%0D%0A");
+    }
+}
+
+function emptyAnswer() {
+    alert("모든 값을 입력해주세요");
+    throw new Error("no value");
+}
+
+
+/*form.addEventListener("submit", (e)=>{
+    e.preventDefault();//prevent default behaviour
+    //e.stopImmediatePropagation();
+    fetch(url,{
+        method: "POST",
+        mode: "no-cors",
+        header:{
+            'Content-Type': 'application/json'
+            },
+        body: getInputData()
+    })
+    .then(data=>{
+        console.log(data);
+        alert("Form Submitted");
+    })
+    .catch(err=>console.error(err)); //promise based
+});
+
+//populating input data
+function getInputData(){
+    let dataToPost = new FormData(); //formdata API
+
+    //fill name attributes to corresponding values
+    dataToPost.append("emtr", document.getElementById("select_test").value);
+    dataToPost.append("emtr", document.getElementById("select_test2").value);
+    //dataToPost.append("entry.294341084", document.getElementById("inp1").value);
+
+    return dataToPost;
+}
+*/

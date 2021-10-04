@@ -3,7 +3,7 @@ let url = "https://script.google.com/macros/s/AKfycbypwTB8D625tAwUUNW36c194ZxQk2
 
 let values = ["136314928","1148749992"];
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", function(e) {
     e.preventDefault();
 
     let link = generateUrl();
@@ -16,12 +16,12 @@ form.addEventListener("submit", (e) => {
         method: "GET",
         mode: "no-cors"
     })
-    .then(data=>{
+    .then(function(data) {
         console.log(data);
         alert("신청곡이 제출되었습니다. 감사합니다!");
         location.reload();
     })
-    .catch(err=> {
+    .catch(function(err) {
         console.error(err)
         alert(err);
     }); //promise based
@@ -58,7 +58,11 @@ function generateUrl(){
             }
         }
     }
+    try {
     return link.replaceAll(" ","%20").replaceAll("\n","%0D%0A");
+    } catch (err) { // internet explorer
+        return link.replace(/" "/gi,"%20").replace(/"\n"/gi,"%0D%0A");
+    }
 }
 
 function emptyAnswer() {
