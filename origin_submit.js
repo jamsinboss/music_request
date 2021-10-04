@@ -36,20 +36,24 @@ function generateUrl(){
     {
         console.log(i);
 
-        link += "&";
-
         let element = document.getElementById(values[i]);
         if(element != undefined)
         {
-            if(document.getElementById(values[i]).value.length == 0) emptyAnswer();
-            link += values[i] + "=" + document.getElementById(values[i]).value;
+            var value;
+            if(element.value.length == 0)
+            {
+                if(element.name == "optional") value = "";
+                else emptyAnswer();
+            }
+            else value = element.value;
+            link += "&" + values[i] + "=" + value;
         }
         else
         {
             let arr = document.querySelectorAll('input[name=\"' + values[i] + '\"]:checked');
             if(arr.length == 0) emptyAnswer();
             for(let j=0;j<arr.length;j++) {
-                if(j!=0) link += "&";
+                link += "&";
                 link += values[i] + "=" + arr[j].value;
             }
         }
