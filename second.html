@@ -11,6 +11,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<script src="https://www.recaptcha.net/recaptcha/api.js" async defer></script>
+		<link rel="icon" href="images/boss.svg" />
+		<link rel="mask-icon" href="images/boss.svg" />
+		<meta name="theme-color" content="#ffffff">
 	</head>
 	<body class="is-preload">
 		<!-- Wrapper -->
@@ -22,7 +26,7 @@
 
 							<!-- Logo -->
 								<a href="index.html" class="logo">
-									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">BOSS</span>
+									<span class="symbol"><img src="images/boss.svg" alt="" /></span><span class="title">BOSS</span>
 								</a>
 
 							<!-- Nav -->
@@ -59,17 +63,7 @@
 								<li>🎈 제출된 신청곡 목록은 <strong>매주</strong> 초기화됩니다</li>
 							</ul>
 							<form method="post" id="form" name="2">
-
-								<label>신청곡+가수</label>
-								<input type="text" id="136314928" />
-								<br/>
-
-								<label>뮤비 혹은 무대 영상 링크</label>
-								<textarea id="1148749992"></textarea>
-								<br/>
-
-								<input id="submit" type="submit" value="제출하기">
-								<label id="submitting">신청곡 제출 중... (최대 10초 소요)</label>
+								<div id="recaptcha" class="g-recaptcha" data-callback="recaptchaCallback" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
 							</form>
 						</div>
 					</div>
