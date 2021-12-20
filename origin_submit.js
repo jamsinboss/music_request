@@ -1,8 +1,9 @@
 let form = document.getElementById("form");
-let url = "https://script.google.com/macros/s/AKfycbypwTB8D625tAwUUNW36c194ZxQk2xzBoD1co1tfZcrJ9Em_nhbRyLMTj9s0xHqfg/exec";
+let url = "https://script.google.com/macros/s/AKfycbz0xDE1DSaDKKl6AvzP6qLoEUFolnYlgo_tEpBb-LVVwYqoHXy2pDe-weEF7dSYeJb4/exec";
+let token;
 
 let values = [];
-let grade = getParameterByName('grade');
+let formName = getParameterByName('form');
 
 function recaptchaCallback() {
     console.log('recaptcha succeed!');
@@ -10,17 +11,13 @@ function recaptchaCallback() {
     setTimeout(function() {
         document.getElementById('recaptcha').style.visibility= 'hidden';
     },1000);
-    while(waiting.length > 0)
-    {
-        appendForm(waiting[0]);
-        waiting.shift();
-    }
+    showForm();
 }
 
 $.ajax({
 
-    url: encodeURI(url + "?type=getitem&grade=" + grade),
-    type: 'GET',
+    url: encodeURI(url + "?type=getform&form=" + formName),
+    method: "GET",
     crossDomain: true,
     success: function(data) {
         console.log(data);
@@ -78,15 +75,20 @@ form.addEventListener("submit", function(e) {
 })
 
 function handleData(data) {
+    token = data.token;
+
     const title = data.title;
     const description = data.description;
     appendForm('<h1>' + title + "</h1>");
-    appendForm('<ul>');
-    const des = description.split('\n');
-    for(let i=0;i<des.length;i++) {
-        appendForm('<li>' + des[i] + "</li>");
+    if(description != undefined && description != "")
+    {
+        appendForm('<ul>');
+        const des = description.split('\n');
+        for(let i=0;i<des.length;i++) {
+            appendForm('<li>' + des[i] + "</li>");
+        }
+        appendForm('</ul><br/><br/>');
     }
-    appendForm('</ul><br/><br/>');
 
     document.title = title;
 
@@ -94,9 +96,10 @@ function handleData(data) {
     for(let i=0;i<list.length;i++) {
         const item = list[i];
         putItem(item);
-        values.push(item.id);
     }
     appendForm('<input id="submit" type="submit" value="제출하기" />\n<label id="submitting" style="display:none;">신청곡 제출 중... (최대 10초 소요)</label>');
+    showForm();
+    console.log(values);
 }
 
 /*
@@ -138,107 +141,339 @@ function handleData(data) {
 
 function putItem(item) {
     const title = item.title;
+    const helpText = item.helpText;
     const id = item.id;
     const type = item.type;
     const extra = item.extra;
 
     switch(type) {
-        case "TEXT":
-            var required = extra.required;
-            appendForm(String.format('<label>{0}{1}</label>', title, !required ? ' (선택)' : ''));
-            appendForm(String.format('<input type="text" id="{0}" {1}/>', id, !required ? 'name="optional" ' : ''));
+        case "MULTIPLE_CHOICE": {
+            const choices = extra.choices;
+            const required = extra.required;
+
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+            for(let i=0;i<choices.length;i++)
+            {
+                const choice = choices[i];
+                const value = choice.value;
+                appendForm(String.format('<input type="radio" id="{0}_{1}" name="{0}" value="{2}" {3}/>', id, i, value, required ? 'required' : ''));
+                appendForm(String.format('<label for="{0}_{1}">{2}</label>', id, i, value.md()));
+
+                //@TODO: extra.hasOtherOption
+            }
+
+            values.push({id : id, type : type});
             break;
-        case "PARAGRAPH_TEXT":
-            var required = extra.required;
-            appendForm(String.format('<label>{0}{1}</label>', title, !required ? ' (선택)' : ''));
-            appendForm(String.format('<textarea id="{0}" {1}/>', id, !required ? 'name="optional" ' : ''));
+        }
+        case "LIST": {
+            const choices = extra.choices;
+            const required = extra.required;
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+            
+            appendForm(String.format('<select id="{0}" {1}>', id, required ? 'required' : ''));
+            appendForm(String.format('<option value="" required selected disabled>선택</option>'));
+            for(let i=0;i<choices.length;i++)
+            {
+                const choice = choices[i];
+                const value = choice.value;
+                appendForm(String.format('<option value="{0}">{1}</option>', value, value.md()));
+            }
+            appendForm(String.format('</select>'));
+            
+            values.push({id : id, type : type});
             break;
-        default:
+        }
+        case "CHECKBOX": {
+            const choices = extra.choices;
+            const required = extra.required;
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+
+            for(let i=0;i<choices.length;i++)
+            {
+                const choice = choices[i];
+                const value = choice.value;
+                appendForm(String.format('<input type="checkbox" id="{0}_{1}" name="{0}" value="{2}" {3}/>', id, i, value, required ? 'required' : ''));
+                appendForm(String.format('<label for="{0}_{1}">{2}</label>', id, i, value.md()));
+            }
+            
+            values.push({id : id, type : type});
+            break;
+        }
+        case "TEXT": {
+            const required = extra.required;
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+            appendForm(String.format('<input type="text" id="{0}" {1}/>', id, required ? 'required' : ''));
+            
+            values.push({id : id, type : type});
+            break;
+        }
+        case "PARAGRAPH_TEXT": {
+            const required = extra.required;
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+            appendForm(String.format('<textarea id="{0}" {1}></textarea>', id, required ? 'required' : ''));
+            
+            values.push({id : id, type : type});
+            break;
+        }
+        case "SECTION_HEADER": {
+            appendForm(String.format('<label style="font-size: 140%">{0}</label>', title.md()));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+            
+            values.push({id : id, type : type});
+            break;
+        }
+        case "SCALE": {
+            const required = extra.required;
+            const lowerBound = extra.lowerBound;
+            const upperBound = extra.upperBound;
+            const leftLabel = extra.leftLabel;
+            const rightLabel = extra.rightLabel;
+
+            const width = 50;
+            
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+            appendForm(String.format('<input type="range" id="{0}" min="{1}" max="{2}" value="-1" step="1" list="mark_{0}" style="appearance: auto; width: {3}%" {4}/>',
+                id, lowerBound, upperBound, width, required ? 'required' : ''))
+            
+            appendForm(String.format('<datalist id="mark_{0}" style="display: flex; width: {1}%; justify-content: space-between;"">', id, width));
+            for(var i=lowerBound;i<=upperBound;i++) {
+                appendForm(String.format('<option value="{0}" {1}></option>', i,
+                    i == lowerBound || i == upperBound ? "label=\"" + 
+                        (i == lowerBound ? leftLabel.md() : rightLabel.md()) + "\""
+                    : ""));
+            }
+            appendForm(String.format('</datalist>'));
+            
+            values.push({id : id, type : type});
+            break;
+        }
+        case "GRID": {
+            const required = extra.required;
+            const rows = extra.rows;
+            const columns = extra.columns;
+
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+
+            appendForm(String.format('<table><th>'));
+            for(var i=0;i<columns.length;i++) {
+                appendForm(String.format('<td><label>{0}</label></td>', columns[i].md()));
+            }
+            appendForm(String.format('</th>'));
+
+            for(var i=0;i<rows.length;i++) {
+                appendForm(String.format('<tr><td><label>{0}</label></td>', rows[i].md()));
+                for(var j=0;j<columns.length;j++) {
+                    appendForm(String.format('<td><input type="radio" id="{0}_{1}_{2}" name="{0}_{1}" value="{3}" {4}/><label for="{0}_{1}_{2}"></td>', id, i, j, columns[j],
+                        required ? 'required' : ''));
+                }
+                appendForm(String.format('</tr>'));
+            }
+            appendForm(String.format('</table>'));
+            
+            values.push({id : id, type : type, rowLength : rows.length});
+            break;
+        }
+        case "CHECKBOX_GRID": {
+            const required = extra.required;
+            const rows = extra.rows;
+            const columns = extra.columns;
+
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+
+            appendForm(String.format('<table><th>'));
+            for(var i=0;i<columns.length;i++) {
+                appendForm(String.format('<td><label>{0}</label></td>', columns[i].md()));
+            }
+            appendForm(String.format('</th>'));
+
+            for(var i=0;i<rows.length;i++) {
+                appendForm(String.format('<tr><td><label>{0}</label></td>', rows[i].md()));
+                for(var j=0;j<columns.length;j++) {
+                    appendForm(String.format('<td><input type="checkbox" id="{0}_{1}_{2}" name="{0}_{1}" value="{3}" {4}/><label for="{0}_{1}_{2}"></td>', id, i, j, columns[j],
+                        required ? 'required' : ''));
+                }
+                appendForm(String.format('</tr>'));
+            }
+            appendForm(String.format('</table>'));
+            
+            values.push({id : id, type : type, rows : rows});
+            break;
+        }
+        case "DATE": {
+            const required = extra.required;
+            const includesYear = extra.includesYear;
+
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+
+            appendForm(String.format('<input type="date" id="{0}" name="{0}" {1} {2}/>', id,
+                includesYear ? 'min="2021-01-01" max="2021-12-31"' : '',
+                required ? 'required' : ''));
+            
+            appendForm(String.format('<br/>'));
+
+            values.push({id : id, type : type});
+            break;
+        }
+        case "DATETIME": {
+            const required = extra.required;
+            const includesYear = extra.includesYear;
+
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+
+            appendForm(String.format('<input type="datetime-local" id="{0}" name="{0}" {1} {2}/>', id,
+                includesYear ? 'min="2021-01-01" max="2021-12-31"' : '',
+                required ? 'required' : ''));
+            appendForm(String.format('<br/>'));
+
+            values.push({id : id, type : type});
+            break;
+        }
+        case "TIME": {
+            const required = extra.required;
+
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+
+            appendForm(String.format('<input type="time" id="{0}" name="{0}" step="1" {1}/>', id, required ? 'required' : ''));
+            appendForm(String.format('<br/>'));
+
+            values.push({id : id, type : type});
+            break;
+        }
+        case "DURATION": {
+            const required = extra.required;
+
+            appendForm(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+
+            appendForm(String.format('<input type="time" id="{0}" name="{0}" {1}/>', id, required ? 'required' : ''));
+            appendForm(String.format('<br/>'));
+
+            values.push({id : id, type : type});
+            break;
+        }
+        case "IMAGE": {
+            const image = extra.image;
+            const imageType = extra.imageType;
+            const alignment = extra.alignment;
+            
+            appendForm(String.format('<label style="font-size: 120%">{0}</label>', title.md()));
+            if(helpText != undefined) appendForm(String.format('<label>{0}</label>', helpText));
+
+            appendForm(String.format('<div style="display: flex; justify-content: {0}">', alignment));
+            appendForm(String.format('<img src="{0}" loading="lazy" style="width: 70%;"/>', 
+                String.format('data:{0};base64,{1}', imageType, image)));
+            appendForm(String.format('</div><br/>'));
+
+            values.push({id : id, type : type});
+            break;
+        }
+        default: {
             console.log(item);
             throw new Error('no type: ' + type);
+        }
     }
-    appendForm('<br/>');
-    values.push(id);
+    appendForm('<br/><hr/>');
 }
 
 const parser = new DOMParser();
-let waiting = [];
+let waiting = "";
 let isWaiting = true;
 function appendForm(str) {
-    if(isWaiting) waiting.push(str);
-    else form.insertAdjacentHTML('beforeend', markdown(str));
+    waiting = waiting.concat(str)
+}
+function showForm() {
+    if(!isWaiting) form.insertAdjacentHTML('beforeend', waiting);
 }
 
-function markdown(str = String) {
-    str = str.replaceAll(/[\*]{2}([^\*\*]+)[\*]{2}/g, "<b>$1</b>");
-    str = str.replaceAll(/[\_]{2}([^\*\*]+)[\_]{2}/g, "<u>$1</u>");
-    str = str.replaceAll(/[\~]{2}([^\*\*]+)[\~]{2}/g, "<del>$1</del>");
-    str = str.replaceAll(/[\_]{1}([^\*\*]+)[\_]{1}/g, "<i>$1</i>");
-    str = str.replaceAll(/[\*]{1}([^\*\*]+)[\*]{1}/g, "<i>$1</i>");
+function markdown(str) {
+    str = str.replace(/[\*]{2}([^\*\*]+)[\*]{2}/g, "<b>$1</b>");
+    str = str.replace(/[\_]{2}([^\*\*]+)[\_]{2}/g, "<u>$1</u>");
+    str = str.replace(/[\~]{2}([^\*\*]+)[\~]{2}/g, "<del>$1</del>");
+    str = str.replace(/[\_]{1}([^\*\*]+)[\_]{1}/g, "<i>$1</i>");
+    str = str.replace(/[\*]{1}([^\*\*]+)[\*]{1}/g, "<i>$1</i>");
 
     return str;
-    /*let bold = false;
-    let italic = false;
-    let underlined = false;
-    for(var i=0;i<str.length;i++) {
-        console.log(str.substring(i,i+2));
-        if(str.substring(i,i+2) == "**")
-        {
-            if(bold === false)
-            {
-                str.replaceAt(i,"<strong>");
-                bold = true;
-                i+=6;
-            }
-            else
-            {
-                str.replaceAt(i,"</strong>");
-                bold = false;
-                i+=7;
-            }
-        }
-        else if(str.substring(i,i+2) == "__")
-        {
-            if(underlined === false)
-            {
-                str.replaceAt(i,"<u>");
-                underlined = true;
-                i+=2;
-            }
-            else
-            {
-                str.replaceAt(i,"</u>");
-                underlined = false;
-                i+=3;
-            }
-        }
-        else if(str.substring(i,i+1) == "*" || str.substring(i,i+1) == "_")
-        {
-            if(italic === false)
-            {
-                str.replaceAt(i,"<i>");
-                italic = true;
-                i+=2;
-            }
-            else
-            {
-                str.replaceAt(i,"</i>");
-                italic = false;
-                i+=3;
-            }
-        }
-    }
-    return str;*/
 }
 
 function genSubmitUrl(){
     let link = url;
-    link += "?type=submit&grade=" + getParameterByName('grade');
+    link += "?type=submit&form=" + formName + "&token=" + token;
     for(let i=0;i<values.length;i++)
     {
+        let value = values[i];
         console.log(i);
 
-        let element = document.getElementById(values[i]);
+        let id = value.id;
+        let type = value.type;
+
+        console.log(id);
+        console.log(type);
+
+        switch(type)
+        {
+            case "MULTIPLE_CHOICE":
+            case "CHECKBOX":{
+                let elements = document.querySelectorAll(String.format('input[name="{0}"]:checked', id));
+                for(let j=0;j<elements.length;j++) {
+                    link += String.format('&{0}={1}', id, elements[j].value);
+                }
+                break;
+            }
+            case "DATE":
+            case "DATETIME":
+            case "TIME":
+            case "DURATION":
+            case "LIST":
+            case "TEXT": 
+            case "PARAGRAPH_TEXT":
+            case "SCALE": {
+                let element = document.getElementById(id);
+                link += String.format('&{0}={1}', id, element.value);
+                break;
+            }
+            case "GRID": {
+                for(let j=0;j<value.rowLength;j++) {
+                    let elements = document.querySelectorAll(String.format('input[name="{0}_{1}"]:checked', id, j));
+                    for(let k=0;k<elements.length;k++) {
+                        link += String.format('&{0}={1}', id, elements[k].value);
+                    }
+                }
+                break;
+            }
+            case "CHECKBOX_GRID": {
+                let rows = value.rows;
+                let result = [];
+                for(let j=0;j<rows.length;j++) {
+                    let arr = [];
+                    let elements = document.querySelectorAll(String.format('input[name="{0}_{1}"]:checked', id, j));
+                    for(let k=0;k<elements.length;k++) {
+                        arr.push(elements[k].value); 
+                    }
+                    result.push(arr);
+                }
+                link += String.format('&{0}={1}', id, JSON.stringify(result));
+                break;
+            }
+            case "SECTION_HEADER": 
+            case "IMAGE":
+                break;
+            default: {
+                throw new Error("no support for " + type + i);
+            }
+        }
+
+        /*let element = document.getElementById(value.id);
         if(element != undefined)
         {
             var value;
@@ -252,12 +487,12 @@ function genSubmitUrl(){
         }
         else
         {
-            let arr = document.querySelectorAll('input[name=\"' + values[i] + '\"]:checked');
+            let arr = document.querySelectorAll('input[id=\"' + values[i] + '\"]:checked');
             if(arr.length == 0) emptyAnswer();
             for(let j=0;j<arr.length;j++) {
                 link += "&" + values[i] + "=" + arr[j].value;
             }
-        }
+        }*/
     }
     try {
         return link.replaceAll(" ","%20").replaceAll("\n","%0D%0A");
@@ -279,10 +514,14 @@ String.format = function() {
     });
 }
 String.prototype.replaceAt = function(index, replacement) {
-    return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+    return this.substring(0, index) + replacement + this.substring(index + replacement.length);
+}
+String.prototype.md = function () {
+    return markdown(this);
 }
 
-function getParameterByName(name, url = window.location.href) {
+function getParameterByName(name) {
+    let url = window.location.href;
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
         results = regex.exec(url);
