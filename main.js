@@ -1,32 +1,26 @@
 
 /* VARIABLES */
 
-const url = "https://script.google.com/macros/s/AKfycbz3is5Udp1rDJbWj9WUpZ3MUVbw62qOEDNMfuQ5zYfYDkq3Cybs0hdeFjBRDEYP5J0/exec";
-//const RECAPTCHA_SITEKEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"; // for test
-const RECAPTCHA_SITEKEY = "6Lc39MEcAAAAAKZi1aObdUZn5Mc1VtZBCI50d34W";
+const url = 'https://script.google.com/macros/s/' + SCRIPT_KEY + '/exec';
 
-let div = document.getElementById('div');
+let div = document.getElementById('extform');
 let token;
 let forms = [];
 let values = [];
 
-
-
-
-
-
 /* HTML LOAD FUNCTIONS */
 
 // loading
-const HTML_LOADING = '<div id="loading"><i class="fas fa-spinner fa-3x fa-spin"></i><p>로딩중... (최대 $0초 소요)</p></div>';
+const HTML_LOADING = '<div id="loading"><i class="fas fa-spinner fa-3x fa-spin"></i><p>' + MSG.LOADING + '</p></div>';
 function showLoading(maxTime) {
     appendHtml(HTML_LOADING.replace('$0',maxTime));
     putHtml();
 }
 
 // getFormList
-const HTML_FORMLIST_START = '<header><h1>점심방송 신청곡</h1><p>자신의 학년을 선택해주세요!</p></header><section class="tiles">';
+const HTML_FORMLIST_START = '<header><h1>' + MSG.LIST_TITLE + '</h1><p>' + MSG.LIST_DESCRIPTION + '</p></header><section class="tiles">';
 const HTML_FORMLIST_FORM = '<article class="style{0}"><span class="image"><img src="images/pic0{0}.jpg" alt="" /></span><a href="#" onclick="showForm({1});return false;"><h2>{2}</h2><div class="content"><p>{3}</p></div></a></article>';
+const HTML_FORMLIST_URL = '<article class="style{0}"><span class="image"><img src="images/pic0{0}.jpg" alt="" /></span><a href="{1}" target="_blank"><h2>{2}</h2><div class="content"><p>{3}</p></div></a></article>';
 const HTML_FORMLIST_END = '</section>';
 function showFormList() {
     clean();
@@ -34,12 +28,26 @@ function showFormList() {
     request('?type=getformlist', function(data) {
         appendHtml(HTML_FORMLIST_START);
         for(let i=0;i<data.length;i++) {
-            let name = data[i].name;
+            let type = data[i].type;
             let title = data[i].title;
             let description = data[i].description;
+            switch(type) {
+                case 'url': {
+                    let url = data[i].url;
 
-            appendHtml(String.format(HTML_FORMLIST_FORM, (i%6)+1, i, title, description));
-            forms.push(name);
+                    appendHtml(String.format(HTML_FORMLIST_URL, (i%6)+1, url, title, description));
+                    break;
+                }
+                case 'form':
+                default:
+                {
+                    let name = data[i].name;
+
+                    appendHtml(String.format(HTML_FORMLIST_FORM, (i%6)+1, i, title, description));
+                    forms.push(name);
+                    break;
+                }
+            }
         }
         appendHtml(HTML_FORMLIST_END);
         putHtml();
@@ -73,18 +81,19 @@ function doSubmit() {
     let link = genSubmitUrl();
     console.log(link);
     request(link, function(data) {
+        console.log(data);
         proceedSubmit();
     });
     
     grecaptcha.render('recaptcha', {
         'sitekey' : RECAPTCHA_SITEKEY,
         'callback' : recaptchaCallback
-    })
+    });
 }
 
 function recaptchaCallback() {
     setTimeout(function() {
-        showLoading();
+        showLoading(10);
         proceedSubmit();
     }, 1000, 10);
 }
@@ -93,7 +102,7 @@ let showSubmitSucceedAlert = false;
 function proceedSubmit() {
     if(!showSubmitSucceedAlert) showSubmitSucceedAlert = true;
     else {
-        alert('신청곡이 제출되었습니다. 감사합니다!');
+        alert(MSG.SUBMIT_SUCCESS);
         clean();
         showFormList();
     }
@@ -127,7 +136,7 @@ function request(param,callback) {
         success: function(data) {
             if(data.error != null) {
                 console.log(data.error);
-                alert("오류가 발생했습니다. 현상이 지속된다면 jamsinboss@gmail.com으로 알려주세요.\n\n" + data.error);
+                alert(MSG.ERROR + "\n\n" + data.error);
                 location.reload();
             }
             else {
@@ -137,7 +146,7 @@ function request(param,callback) {
         },
         error: function(err) {
             console.log(err);
-            alert("오류가 발생했습니다. 현상이 지속된다면 jamsinboss@gmail.com으로 알려주세요.\n\n" + err);
+            alert(MSG.ERROR + "\n\n" + data.error);
             //location.reload();
         }
     });
@@ -194,7 +203,7 @@ function markdown(str) {
 showFormList();
 
 if (window.document.documentMode) {
-    alert('현재 Internet Explorer 브라우저를 사용하고 있습니다.\n일부 기능이 작동하지 않을 수 있습니다.\n\nChrome, Edge, Whale 등 다른 브라우저를 사용해주세요.');
+    alert(MSG.INTERNET_EXPLORER);
 }
 
 
@@ -234,7 +243,7 @@ function handleFormData(data) {
         const item = list[i];
         putItem(item);
     }
-    appendHtml('<input id="submit" type="submit" value="제출하기" />');
+    appendHtml(String.format('<input id="submit" type="submit" value="{0}" />', MSG.SUBMIT));
     console.log(values);
 }
 
@@ -250,7 +259,7 @@ function putItem(item) {
             const choices = extra.choices;
             const required = extra.required;
 
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
             for(let i=0;i<choices.length;i++)
             {
@@ -268,11 +277,11 @@ function putItem(item) {
         case "LIST": {
             const choices = extra.choices;
             const required = extra.required;
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
             
             appendHtml(String.format('<select id="{0}" {1}>', id, required ? 'required' : ''));
-            appendHtml(String.format('<option value="" required selected disabled>선택</option>'));
+            appendHtml(String.format('<option value="" required selected disabled>{0}</option>', MSG.CHOICE));
             for(let i=0;i<choices.length;i++)
             {
                 const choice = choices[i];
@@ -287,7 +296,7 @@ function putItem(item) {
         case "CHECKBOX": {
             const choices = extra.choices;
             const required = extra.required;
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
 
             for(let i=0;i<choices.length;i++)
@@ -303,18 +312,18 @@ function putItem(item) {
         }
         case "TEXT": {
             const required = extra.required;
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
-            appendHtml(String.format('<input type="text" id="{0}" placeholder="텍스트 입력" {1}/>', id, required ? 'required' : ''));
+            appendHtml(String.format('<input type="text" id="{0}" placeholder="Text input" {1}/>', id, required ? 'required' : ''));
             
             values.push({id : id, type : type});
             break;
         }
         case "PARAGRAPH_TEXT": {
             const required = extra.required;
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
-            appendHtml(String.format('<textarea id="{0}" placeholder="텍스트 입력" {1}></textarea>', id, required ? 'required' : ''));
+            appendHtml(String.format('<textarea id="{0}" placeholder="Text input" {1}></textarea>', id, required ? 'required' : ''));
             
             values.push({id : id, type : type});
             break;
@@ -335,7 +344,7 @@ function putItem(item) {
 
             const width = 50;
             
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
             appendHtml(String.format('<input type="range" id="{0}" min="{1}" max="{2}" value="-1" step="1" list="mark_{0}" style="appearance: auto; width: {3}%" {4}/>',
                 id, lowerBound, upperBound, width, required ? 'required' : ''))
@@ -357,7 +366,7 @@ function putItem(item) {
             const rows = extra.rows;
             const columns = extra.columns;
 
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
 
             appendHtml(String.format('<table><th>'));
@@ -384,7 +393,7 @@ function putItem(item) {
             const rows = extra.rows;
             const columns = extra.columns;
 
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
 
             appendHtml(String.format('<table><th>'));
@@ -410,7 +419,7 @@ function putItem(item) {
             const required = extra.required;
             const includesYear = extra.includesYear;
 
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
 
             appendHtml(String.format('<input type="date" id="{0}" name="{0}" {1} {2}/>', id,
@@ -426,11 +435,11 @@ function putItem(item) {
             const required = extra.required;
             const includesYear = extra.includesYear;
 
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
 
             appendHtml(String.format('<input type="datetime-local" id="{0}" name="{0}" {1} {2}/>', id,
-                includesYear ? 'min="2021-01-01" max="2021-12-31"' : '',
+                includesYear ? 'min="2022-01-01" max="2022-12-31"' : '',
                 required ? 'required' : ''));
             appendHtml(String.format('<br/>'));
 
@@ -440,7 +449,7 @@ function putItem(item) {
         case "TIME": {
             const required = extra.required;
 
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
 
             appendHtml(String.format('<input type="time" id="{0}" name="{0}" step="1" {1}/>', id, required ? 'required' : ''));
@@ -452,7 +461,7 @@ function putItem(item) {
         case "DURATION": {
             const required = extra.required;
 
-            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (선택)' : ''));
+            appendHtml(String.format('<label style="font-size: 120%">{0}{1}</label>', title.md(), !required ? ' (' + MSG.OPTIONAL + ')' : ''));
             if(helpText != undefined) appendHtml(String.format('<label>{0}</label>', helpText));
 
             appendHtml(String.format('<input type="time" id="{0}" name="{0}" {1}/>', id, required ? 'required' : ''));
@@ -504,7 +513,7 @@ function genSubmitUrl(){
             case "CHECKBOX":{
                 let elements = document.querySelectorAll(String.format('input[name="{0}"]:checked', id));
                 for(let j=0;j<elements.length;j++) {
-                    link += String.format('&{0}={1}', id, elements[j].value);
+                    link += String.format('&{0}={1}', id, encodeURIComponent(elements[j].value));
                 }
                 if(elements.length == 0) link += String.format('&{0}=', id);
                 break;
@@ -518,14 +527,14 @@ function genSubmitUrl(){
             case "PARAGRAPH_TEXT":
             case "SCALE": {
                 let element = document.getElementById(id);
-                link += String.format('&{0}={1}', id, element.value);
+                link += String.format('&{0}={1}', id, encodeURIComponent(element.value));
                 break;
             }
             case "GRID": {
                 for(let j=0;j<value.rowLength;j++) {
                     let elements = document.querySelectorAll(String.format('input[name="{0}_{1}"]:checked', id, j));
                     for(let k=0;k<elements.length;k++) {
-                        link += String.format('&{0}={1}', id, elements[k].value);
+                        link += String.format('&{0}={1}', id, encodeURIComponent(elements[k].value));
                     }
                 }
                 break;
@@ -537,11 +546,11 @@ function genSubmitUrl(){
                     let arr = [];
                     let elements = document.querySelectorAll(String.format('input[name="{0}_{1}"]:checked', id, j));
                     for(let k=0;k<elements.length;k++) {
-                        arr.push(elements[k].value); 
+                        arr.push(elements[k].value);
                     }
                     result.push(arr);
                 }
-                link += String.format('&{0}={1}', id, JSON.stringify(result));
+                link += String.format('&{0}={1}', id, encodeURIComponent(JSON.stringify(result)));
                 break;
             }
             case "SECTION_HEADER": 
@@ -552,9 +561,10 @@ function genSubmitUrl(){
             }
         }
     }
-    try {
+    /*try {
         return link.replaceAll(" ","%20").replaceAll("\n","%0D%0A");
     } catch (err) { // internet explorer
         return link.replace(/" "/gi,"%20").replace(/"\n"/gi,"%0D%0A");
-    }
+    }*/
+    return link;
 }
